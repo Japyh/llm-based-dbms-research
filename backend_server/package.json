@@ -1,0 +1,31 @@
+{
+    "name": "llm-dbms-backend",
+    "version": "2.0.0",
+    "description": "LLM-Based DBMS Backend API",
+    "main": "server.js",
+    "scripts": {
+        "start": "node server.js",
+        "dev": "node server.js"
+    },
+    "keywords": [
+        "llm",
+        "database",
+        "api"
+    ],
+    "author": "ESTU Research Team",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/Japyh/llm-based-dbms.git"
+    },
+    "bugs": {
+        "url": "https://github.com/Japyh/llm-based-dbms/issues"
+    },
+    "dependencies": {
+        "express": "^4.18.2",
+        "cors": "^2.8.5",
+        "dotenv": "^16.3.1",
+        "sqlite3": "^5.1.6",
+        "openai": "^4.20.1"
+    }
+}

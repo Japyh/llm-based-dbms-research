@@ -1,0 +1,114 @@
+{
+    "models": {
+        "gpt-4o-mini-finetuned": {
+            "provider": "openai",
+            "base_model": "gpt-4o-mini-2024-07-18",
+            "model_id": "ft:gpt-4o-mini-2024-07-18:personal::XXXXXXXXX",
+            "description": "Fine-tuned on 1000+ sales database query examples",
+            "training_date": "2024-12-05",
+            "metrics": {
+                "execution_accuracy": 83.5,
+                "exact_match": 78.2,
+                "avg_latency_ms": 800,
+                "cost_per_1k_queries": 0.30
+            },
+            "training_config": {
+                "dataset": "sales_queries.jsonl",
+                "epochs": 3,
+                "batch_size": 4,
+                "learning_rate_multiplier": 1.8
+            },
+            "status": "active",
+            "deployment": {
+                "endpoint": "openai_api",
+                "requires_api_key": true
+            }
+        },
+        "llama-3-8b-finetuned": {
+            "provider": "meta",
+            "base_model": "meta-llama/Meta-Llama-3-8B",
+            "model_id": "local:llama3-sales-ft",
+            "huggingface_repo": "yourorg/llama3-sales-finetuned",
+            "description": "LoRA fine-tuned Llama-3 for SQL generation",
+            "training_date": "2024-12-04",
+            "metrics": {
+                "execution_accuracy": 78.2,
+                "exact_match": 72.5,
+                "avg_latency_ms": 450,
+                "cost_per_1k_queries": 0.0
+            },
+            "training_config": {
+                "method": "lora",
+                "rank": 16,
+                "alpha": 32,
+                "dataset": "sales_queries.json",
+                "epochs": 5,
+                "batch_size": 8
+            },
+            "status": "active",
+            "deployment": {
+                "endpoint": "ollama",
+                "model_name": "llama3-sales-ft",
+                "requires_gpu": true,
+                "vram_required_gb": 16
+            }
+        },
+        "gemma-7b-finetuned": {
+            "provider": "google",
+            "base_model": "google/gemma-7b",
+            "model_id": "local:gemma-sales-ft",
+            "huggingface_repo": "yourorg/gemma7b-sales-finetuned",
+            "description": "Full fine-tuned Gemma-7B for enterprise SQL",
+            "training_date": "2024-12-03",
+            "metrics": {
+                "execution_accuracy": 76.0,
+                "exact_match": 70.1,
+                "avg_latency_ms": 500,
+                "cost_per_1k_queries": 0.0
+            },
+            "training_config": {
+                "method": "full",
+                "dataset": "sales_queries.json",
+                "epochs": 4,
+                "batch_size": 4,
+                "learning_rate": 2e-5
+            },
+            "status": "active",
+            "deployment": {
+                "endpoint": "ollama",
+                "model_name": "gemma-sales-ft",
+                "requires_gpu": true,
+                "vram_required_gb": 14
+            }
+        },
+        "gpt-4-baseline": {
+            "provider": "openai",
+            "base_model": "gpt-4-turbo-preview",
+            "model_id": "gpt-4-turbo-preview",
+            "description": "Baseline model for comparison (no fine-tuning)",
+            "metrics": {
+                "execution_accuracy": 85.4,
+                "exact_match": 80.9,
+                "avg_latency_ms": 1200,
+                "cost_per_1k_queries": 15.0
+            },
+            "status": "reference",
+            "deployment": {
+                "endpoint": "openai_api",
+                "requires_api_key": true
+            }
+        }
+    },
+    "metadata": {
+        "registry_version": "1.0",
+        "last_updated": "2024-12-05",
+        "default_model": "gpt-4o-mini-finetuned",
+        "evaluation_dataset": "sales_queries.json",
+        "evaluation_metrics": [
+            "execution_accuracy",
+            "exact_match",
+            "latency",
+            "cost"
+        ]
+    }
+}

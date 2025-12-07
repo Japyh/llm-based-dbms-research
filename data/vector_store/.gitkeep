@@ -1,0 +1,13 @@
+# Vector Store Directory
+
+This directory stores vector embeddings for semantic schema search.
+
+## Contents
+- Chroma DB persistent storage (when semantic search is enabled)
+- Embedding vectors for database schema elements
+- Similarity indices for table/column matching
+
+## Usage
+Automatically populated when semantic search features are enabled in the configuration.
+
+See `backend/semantic/` for implementation details.

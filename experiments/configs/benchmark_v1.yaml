@@ -1,0 +1,18 @@
+﻿name: "benchmark_v1"
+description: "Initial benchmark of Text-to-SQL models on Sales dataset"
+
+llm:
+  provider: "mock"
+  model: "mock-model"
+  temperature: 0.0
+
+dataset:
+  name: "sales_data"
+  path: "experiments/datasets/sales_queries.json"
+  format: "json"
+
+evaluation:
+  metrics: ["exact_match", "latency"]
+  max_samples: 10
+
+output_dir: "experiments/results"

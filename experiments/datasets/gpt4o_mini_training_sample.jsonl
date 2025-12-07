@@ -1,0 +1,37 @@
+[
+    {
+        "messages": [
+            {"role": "system", "content": "You are a SQL expert. Convert the natural language question to a valid SQL query based on the provided schema."},
+            {"role": "user", "content": "Schema: CREATE TABLE customers (customerNumber INT, customerName VARCHAR(50), country VARCHAR(50)); Question: List all customers from France"},
+            {"role": "assistant", "content": "SELECT * FROM customers WHERE country = 'France';"}
+        ]
+    },
+    {
+        "messages": [
+            {"role": "system", "content": "You are a SQL expert. Convert the natural language question to a valid SQL query based on the provided schema."},
+            {"role": "user", "content": "Schema: CREATE TABLE products (productCode VARCHAR(15), productName VARCHAR(70), buyPrice DECIMAL(10,2)); Question: Show the top 10 most expensive products"},
+            {"role": "assistant", "content": "SELECT productName, buyPrice FROM products ORDER BY buyPrice DESC LIMIT 10;"}
+        ]
+    },
+    {
+        "messages": [
+            {"role": "system", "content": "You are a SQL expert. Convert the natural language question to a valid SQL query based on the provided schema."},
+            {"role": "user", "content": "Schema: CREATE TABLE customers (customerNumber INT, customerName VARCHAR(50), country VARCHAR(50)); CREATE TABLE orders (orderNumber INT, orderDate DATE, customerNumber INT); Question: Show customers with their order counts"},
+            {"role": "assistant", "content": "SELECT c.customerName, COUNT(o.orderNumber) as order_count FROM customers c LEFT JOIN orders o ON c.customerNumber = o.customerNumber GROUP BY c.customerNumber, c.customerName ORDER BY order_count DESC;"}
+        ]
+    },
+    {
+        "messages": [
+            {"role": "system", "content": "You are a SQL expert. Convert the natural language question to a valid SQL query based on the provided schema."},
+            {"role": "user", "content": "Schema: CREATE TABLE customers (customerNumber INT, customerName VARCHAR(50), country VARCHAR(50)); CREATE TABLE orders (orderNumber INT, customerNumber INT); CREATE TABLE orderDetails (orderNumber INT, quantityOrdered INT, priceEach DECIMAL(10,2)); Question: What is the total revenue by country?"},
+            {"role": "assistant", "content": "SELECT c.country, SUM(od.quantityOrdered * od.priceEach) as total_revenue FROM customers c JOIN orders o ON c.customerNumber = o.customerNumber JOIN orderDetails od ON o.orderNumber = od.orderNumber GROUP BY c.country ORDER BY total_revenue DESC;"}
+        ]
+    },
+    {
+        "messages": [
+            {"role": "system", "content": "You are a SQL expert. Convert the natural language question to a valid SQL query based on the provided schema."},
+            {"role": "user", "content": "Schema: CREATE TABLE customers (customerNumber INT, customerName VARCHAR(50), country VARCHAR(50)); CREATE TABLE orders (orderNumber INT, customerNumber INT); CREATE TABLE orderDetails (orderNumber INT, quantityOrdered INT, priceEach DECIMAL(10,2)); Question: List the top 5 customers in France by total sales"},
+            {"role": "assistant", "content": "SELECT c.customerName, c.country, SUM(od.quantityOrdered * od.priceEach) as total_sales FROM customers c JOIN orders o ON c.customerNumber = o.customerNumber JOIN orderDetails od ON o.orderNumber = od.orderNumber WHERE c.country = 'France' GROUP BY c.customerNumber, c.customerName, c.country ORDER BY total_sales DESC LIMIT 5;"}
+        ]
+    }
+]

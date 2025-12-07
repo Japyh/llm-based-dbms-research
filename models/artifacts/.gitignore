@@ -1,0 +1,24 @@
+# Ignore actual model files (too large for git)
+*.pt
+*.pth
+*.torch
+*.bin
+*.safetensors
+*.gguf
+
+# But keep the directory structure and config files
+!.gitignore
+!README.md
+!*_placeholder.txt
+!*.json
+!*.md
+
+# Model directories
+gemma_ft/
+llama3_ft/
+gpt4_ft/
+
+# Cache and temp files
+*.pyc
+__pycache__/
+

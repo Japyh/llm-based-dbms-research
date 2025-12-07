@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LLM-Based DBMS | Enterprise Data Interface</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                        <rect width="32" height="32" rx="8" fill="url(#logo-gradient)" />
+                        <path d="M16 8L24 12V20L16 24L8 20V12L16 8Z" stroke="white" stroke-width="2" fill="none" />
+                        <defs>
+                            <linearGradient id="logo-gradient" x1="0" y1="0" x2="32" y2="32">
+                                <stop stop-color="#2563EB" />
+                                <stop offset="1" stop-color="#06B6D4" />
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                    <h1>LLM-DBMS</h1>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <h3>Query</h3>
+                    <button class="nav-item active">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
+                            <path fill-rule="evenodd"
+                                d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z"
+                                clip-rule="evenodd" />
+                        </svg>
+                        <span>New Query</span>
+                    </button>
+                    <button class="nav-item">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
+                            <path fill-rule="evenodd"
+                                d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm9.707 5.707a1 1 0 00-1.414-1.414L9 12.586l-1.293-1.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                clip-rule="evenodd" />
+                        </svg>
+                        <span>Query History</span>
+                    </button>
+                </div>
+
+                <div class="nav-section">
+                    <h3>Settings</h3>
+                    <div class="model-selector">
+                        <label>LLM Model</label>
+                        <select id="model-select">
+                            <optgroup label="OpenAI - Base Models">
+                                <option value="gpt4o-mini">GPT-4o-mini (Base)</option>
+                                <option value="gpt4">GPT-4</option>
+                                <option value="gpt35">GPT-3.5 Turbo</option>
+                            </optgroup>
+                            <optgroup label="OpenAI - Fine-Tuned">
+                                <option value="gpt4o-mini-ft" selected>GPT-4o-mini (Fine-Tuned) - 97.8% acc</option>
+                            </optgroup>
+                            <optgroup label="Open Source - Fine-Tuned">
+                                <option value="llama3-ft">Llama-3-8B (Fine-Tuned) - 78.2% acc</option>
+                                <option value="gemma-ft">Gemma-7B (Fine-Tuned) - 76.0% acc</option>
+                            </optgroup>
+                        </select>
+                    </div>
+                </div>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="status-indicator">
+                    <div class="status-dot online"></div>
+                    <span>Backend Online</span>
+                </div>
+                <div class="version-info">
+                    <p>Version 2.0.0</p>
+                    <p class="subtitle">ESTU Research Project</p>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="page-header">
+                <div>
+                    <h1 class="page-title">Natural Language Database Interface</h1>
+                    <p class="page-subtitle">Transform your questions into SQL queries with AI-powered intelligence</p>
+                </div>
+                <div class="header-actions">
+                    <button class="btn-secondary">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd"
+                                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                                clip-rule="evenodd" />
+                        </svg>
+                        Help
+                    </button>
+                </div>
+            </header>
+
+            <!-- Query Input Section -->
+            <section class="query-section">
+                <div class="query-card">
+                    <div class="query-header">
+                        <h2>Enter Your Question</h2>
+                        <div class="query-actions">
+                            <button class="btn-icon" title="Clear">
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd"
+                                        d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
+                                        clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <textarea id="query-input" class="query-textarea"
+                        placeholder="Example: Show me the top 5 customers in France by total sales revenue in 2003..."
+                        rows="4"></textarea>
+                    <div class="query-footer">
+                        <div class="quick-queries">
+                            <button class="quick-query-btn">Top Customers</button>
+                            <button class="quick-query-btn">Revenue by Country</button>
+                            <button class="quick-query-btn">Product Sales</button>
+                        </div>
+                        <button class="btn-primary" id="execute-btn">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd"
+                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                            Execute Query
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Example Queries -->
+                <div class="examples-section">
+                    <button class="examples-toggle" id="examples-toggle">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd"
+                                d="M18 10a8 8 0 11-16 0 8 8 110 016 0zm-8-3a11 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                                clip-rule="evenodd" />
+                        </svg>
+                        Example Queries & Database Schema
+                        <svg class="chevron" width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd"
+                                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                    <div class="examples-content" id="examples-content">
+                        <div class="examples-grid">
+                            <div class="example-category">
+                                <h3>Simple Queries</h3>
+                                <ul>
+                                    <li>List all customers from France</li>
+                                    <li>Show me the top 10 products</li>
+                                    <li>How many orders in 2003?</li>
+                                </ul>
+                            </div>
+                            <div class="example-category">
+                                <h3>Join Queries</h3>
+                                <ul>
+                                    <li>Customers with order counts</li>
+                                    <li>Products and sales revenue</li>
+                                    <li>Employees handling most orders</li>
+                                </ul>
+                            </div>
+                            <div class="example-category">
+                                <h3>Aggregations</h3>
+                                <ul>
+                                    <li>Total revenue by country</li>
+                                    <li>Average order value per customer</li>
+                                    <li>Monthly sales trends for 2004</li>
+                                </ul>
+                            </div>
+                            <div class="example-category">
+                                <h3>Complex Queries</h3>
+                                <ul>
+                                    <li>Top 5 customers by spend in France</li>
+                                    <li>Products never ordered</li>
+                                    <li>Customers with 10+ orders</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Results Section -->
+            <section class="results-section" id="results-section" style="display: none;">
+                <div class="results-tabs">
+                    <button class="tab-btn active" data-tab="data">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd"
+                                d="M5 4a3 3 0 00-3 3v6a3 3 0 003 3h10a3 3 0 003-3V7a3 3 0 00-3-3H5zm-1 9v-1h5v2H5a1 1 0 01-1-1zm7 1h4a1 1 0 001-1v-1h-5v2zm0-4h5V8h-5v2zM9 8H4v2h5V8z"
+                                clip-rule="evenodd" />
+                        </svg>
+                        Data View
+                    </button>
+                    <button class="tab-btn" data-tab="visualization">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                            <path
+                                d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z" />
+                        </svg>
+                        Visualization
+                    </button>
+                    <button class="tab-btn" data-tab="sql">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd"
+                                d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z"
+                                clip-rule="evenodd" />
+                        </svg>
+                        SQL Query
+                    </button>
+                    <button class="tab-btn" data-tab="metadata">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
+                            <path fill-rule="evenodd"
+                                d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z"
+                                clip-rule="evenodd" />
+                        </svg>
+                        Metadata
+                    </button>
+                </div>
+
+                <div class="tab-content active" id="data-tab">
+                    <div class="table-container">
+                        <table id="results-table" class="results-table">
+                            <!-- Results will be inserted here -->
+                        </table>
+                    </div>
+                    <div class="table-stats">
+                        <div class="stat">
+                            <span class="stat-label">Total Rows</span>
+                            <span class="stat-value" id="stat-rows">0</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">Columns</span>
+                            <span class="stat-value" id="stat-columns">0</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">Execution Time</span>
+                            <span class="stat-value" id="stat-time">0ms</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="visualization-tab">
+                    <div class="chart-container">
+                        <div id="chart"></div>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="sql-tab">
+                    <div class="sql-viewer">
+                        <div class="sql-header">
+                            <h3>Generated SQL</h3>
+                            <button class="btn-secondary btn-sm" id="copy-sql-btn">
+                                <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" />
+                                    <path
+                                        d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z" />
+                                </svg>
+                                Copy
+                            </button>
+                        </div>
+                        <pre><code id="sql-code" class="language-sql"></code></pre>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="metadata-tab">
+                    <div class="metadata-grid">
+                        <div class="metadata-card">
+                            <div class="metadata-icon">
+                                <svg width="24" height="24" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd"
+                                        d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                        clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                            <div class="metadata-content">
+                                <div class="metadata-label">Model Used</div>
+                                <div class="metadata-value" id="meta-model">GPT-4o-mini (FT)</div>
+                            </div>
+                        </div>
+                        <div class="metadata-card">
+                            <div class="metadata-icon">
+                                <svg width="24" height="24" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd"
+                                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
+                                        clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                            <div class="metadata-content">
+                                <div class="metadata-label">Response Time</div>
+                                <div class="metadata-value" id="meta-time">--</div>
+                            </div>
+                        </div>
+                        <div class="metadata-card">
+                            <div class="metadata-icon">
+                                <svg width="24" height="24" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd"
+                                        d="M3 4a1 1 0 011-1h3a1 1 0 011 1v3a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm2 2V5h1v1H5zM3 13a1 1 0 011-1h3a1 1 0 011 1v3a1 1 0 01-1 1H4a1 1 0 01-1-1v-3zm2 2v-1h1v1H5zM13 3a1 1 0 00-1 1v3a1 1 0 001 1h3a1 1 0 001-1V4a1 1 0 00-1-1h-3zm1 2v1h1V5h-1z"
+                                        clip-rule="evenodd" />
+                                    <path
+                                        d="M11 4a1 1 0 10-2 0v1a1 1 0 002 0V4zM10 7a1 1 0 011 1v1h2a1 1 0 110 2h-3a1 1 0 01-1-1V8a1 1 0 011-1zM16 9a1 1 0 100 2 1 1 0 000-2zM9 13a1 1 0 011-1h1a1 1 0 110 2v2a1 1 0 11-2 0v-3zM7 11a1 1 0 100-2H4a1 1 0 100 2h3zM17 13a1 1 0 01-1 1h-2a1 1 0 110-2h2a1 1 0 011 1zM16 17a1 1 0 100-2h-3a1 1 0 100 2h3z" />
+                                </svg>
+                            </div>
+                            <div class="metadata-content">
+                                <div class="metadata-label">Query Complexity</div>
+                                <div class="metadata-value" id="meta-complexity">Medium</div>
+                            </div>
+                        </div>
+                        <div class="metadata-card">
+                            <div class="metadata-icon">
+                                <svg width="24" height="24" viewBox="0 0 20 20" fill="currentColor">
+                                    <path
+                                        d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z" />
+                                </svg>
+                            </div>
+                            <div class="metadata-content">
+                                <div class="metadata-label">Tokens Used</div>
+                                <div class="metadata-value" id="meta-tokens">--</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
