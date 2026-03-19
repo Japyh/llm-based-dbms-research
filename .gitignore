@@ -82,6 +82,7 @@ dmypy.json
 
 # Artifacts
 .gemini/
+.local/
 
 # Streamlit secrets  
 .streamlit/secrets.toml
