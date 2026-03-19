@@ -8,6 +8,16 @@ const resultsSection = document.getElementById('results-section');
 const examplesToggle = document.getElementById('examples-toggle');
 const examplesContent = document.getElementById('examples-content');
 const copySqlBtn = document.getElementById('copy-sql-btn');
+const chartTypeSelect = document.getElementById('chart-type-select');
+const xAxisSelect = document.getElementById('x-axis-select');
+const yAxisSelect = document.getElementById('y-axis-select');
+const renderChartBtn = document.getElementById('render-chart-btn');
+const chartCanvas = document.getElementById('chart-canvas');
+const chartEmpty = document.getElementById('chart-empty');
+
+let latestQueryResults = [];
+let latestQueryText = '';
+let activeChart = null;
 
 // Tab Management
 const tabBtns = document.querySelectorAll('.tab-btn');
@@ -24,6 +34,10 @@ tabBtns.forEach(btn => {
         // Add active class to clicked tab
         btn.classList.add('active');
         document.getElementById(`${tabName}-tab`).classList.add('active');
+
+        if (tabName === 'visualization' && latestQueryResults.length > 0) {
+            renderChart();
+        }
     });
 });
 
@@ -86,7 +100,7 @@ executeBtn.addEventListener('click', async () => {
         const data = await response.json();
 
         // Display results
-        displayResults(data, executionTime);
+        displayResults(data, executionTime, query);
         resultsSection.style.display = 'block';
 
         showNotification('Query executed successfully', 'success');
@@ -107,11 +121,14 @@ executeBtn.addEventListener('click', async () => {
 });
 
 // Display Results
-function displayResults(data, executionTime) {
+function displayResults(data, executionTime, queryText = '') {
+    latestQueryResults = Array.isArray(data.results) ? data.results : [];
+    latestQueryText = queryText || '';
+
     // Display data table
-    if (data.results && data.results.length > 0) {
+    if (latestQueryResults.length > 0) {
         const table = document.getElementById('results-table');
-        const columns = Object.keys(data.results[0]);
+        const columns = Object.keys(latestQueryResults[0]);
 
         // Create table header
         const thead = document.createElement('thead');
@@ -125,7 +142,7 @@ function displayResults(data, executionTime) {
 
         // Create table body
         const tbody = document.createElement('tbody');
-        data.results.forEach(row => {
+        latestQueryResults.forEach(row => {
             const tr = document.createElement('tr');
             columns.forEach(col => {
                 const td = document.createElement('td');
@@ -140,10 +157,13 @@ function displayResults(data, executionTime) {
         table.appendChild(tbody);
 
         // Update stats
-        document.getElementById('stat-rows').textContent = data.results.length;
+        document.getElementById('stat-rows').textContent = latestQueryResults.length;
         document.getElementById('stat-columns').textContent = columns.length;
+
+        updateVisualizationControls(columns, latestQueryText);
     } else {
         document.getElementById('results-table').innerHTML = '<p class="no-results">No results found</p>';
+        clearChart();
     }
 
     document.getElementById('stat-time').textContent = `${executionTime}ms`;
@@ -156,6 +176,182 @@ function displayResults(data, executionTime) {
     document.getElementById('meta-model').textContent = document.getElementById('model-select').selectedOptions[0].text;
     document.getElementById('meta-time').textContent = `${executionTime}ms`;
     document.getElementById('meta-tokens').textContent = '~150';
+}
+
+function detectChartTypeFromQuery(queryText = '') {
+    const text = queryText.toLowerCase();
+
+    if (text.includes('histogram') || text.includes('bar chart') || text.includes('bar graph')) {
+        return 'bar';
+    }
+    if (text.includes('line chart') || text.includes('trend') || text.includes('over time') || text.includes('monthly') || text.includes('daily') || text.includes('yearly')) {
+        return 'line';
+    }
+    if (text.includes('pie chart') || text.includes('share') || text.includes('distribution')) {
+        return 'pie';
+    }
+    if (text.includes('doughnut')) {
+        return 'doughnut';
+    }
+    if (text.includes('scatter')) {
+        return 'scatter';
+    }
+    return 'bar';
+}
+
+function isNumericColumn(rows, column) {
+    if (!rows.length) return false;
+    return rows.every(row => {
+        const value = row[column];
+        return value !== null && value !== '' && !Number.isNaN(Number(value));
+    });
+}
+
+function updateVisualizationControls(columns, queryText) {
+    const numericColumns = columns.filter(col => isNumericColumn(latestQueryResults, col));
+    const categoricalColumns = columns.filter(col => !numericColumns.includes(col));
+
+    const preferredX = categoricalColumns[0] || columns[0];
+    const preferredY = numericColumns[0] || columns[0];
+
+    xAxisSelect.innerHTML = columns.map(col => `<option value="${col}">${col}</option>`).join('');
+    yAxisSelect.innerHTML = columns.map(col => `<option value="${col}">${col}</option>`).join('');
+
+    xAxisSelect.value = preferredX;
+    yAxisSelect.value = preferredY;
+
+    chartTypeSelect.value = 'auto';
+    renderChart();
+}
+
+function clearChart(message = 'Run a query to generate a chart.') {
+    if (activeChart) {
+        activeChart.destroy();
+        activeChart = null;
+    }
+    chartCanvas.style.display = 'none';
+    chartEmpty.style.display = 'flex';
+    chartEmpty.textContent = message;
+}
+
+function renderChart() {
+    if (typeof Chart === 'undefined') {
+        clearChart('Chart library could not be loaded.');
+        return;
+    }
+
+    if (!latestQueryResults.length) {
+        clearChart('No query results available for visualization.');
+        return;
+    }
+
+    const selectedType = chartTypeSelect.value;
+    const chartType = selectedType === 'auto' ? detectChartTypeFromQuery(latestQueryText) : selectedType;
+    const xKey = xAxisSelect.value;
+    const yKey = yAxisSelect.value;
+
+    if (!xKey || !yKey) {
+        clearChart('Please select X and Y axes.');
+        return;
+    }
+
+    const labels = latestQueryResults.map(row => String(row[xKey]));
+    const numericValues = latestQueryResults.map(row => Number(row[yKey]));
+    const hasInvalidNumber = numericValues.some(value => Number.isNaN(value));
+
+    if ((chartType !== 'pie' && chartType !== 'doughnut') && hasInvalidNumber) {
+        clearChart(`Column "${yKey}" must be numeric for ${chartType} charts.`);
+        return;
+    }
+
+    if (activeChart) {
+        activeChart.destroy();
+    }
+
+    chartEmpty.style.display = 'none';
+    chartCanvas.style.display = 'block';
+
+    const palette = [
+        '#2563EB', '#06B6D4', '#10B981', '#F59E0B', '#EF4444',
+        '#8B5CF6', '#EC4899', '#14B8A6', '#F97316', '#22C55E'
+    ];
+    const colors = latestQueryResults.map((_, idx) => palette[idx % palette.length]);
+
+    const commonOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                labels: {
+                    color: '#F1F5F9'
+                }
+            }
+        }
+    };
+
+    let config;
+    if (chartType === 'scatter') {
+        const xNumericValues = latestQueryResults.map(row => Number(row[xKey]));
+        if (xNumericValues.some(value => Number.isNaN(value)) || hasInvalidNumber) {
+            clearChart('Scatter chart requires both X and Y axes to be numeric.');
+            return;
+        }
+
+        config = {
+            type: 'scatter',
+            data: {
+                datasets: [{
+                    label: `${yKey} vs ${xKey}`,
+                    data: latestQueryResults.map(row => ({ x: Number(row[xKey]), y: Number(row[yKey]) })),
+                    backgroundColor: '#06B6D4'
+                }]
+            },
+            options: {
+                ...commonOptions,
+                scales: {
+                    x: {
+                        ticks: { color: '#94A3B8' },
+                        grid: { color: '#334155' }
+                    },
+                    y: {
+                        ticks: { color: '#94A3B8' },
+                        grid: { color: '#334155' }
+                    }
+                }
+            }
+        };
+    } else {
+        config = {
+            type: chartType,
+            data: {
+                labels,
+                datasets: [{
+                    label: yKey,
+                    data: numericValues,
+                    backgroundColor: colors.map(c => `${c}CC`),
+                    borderColor: colors,
+                    borderWidth: 2,
+                    fill: chartType === 'line'
+                }]
+            },
+            options: {
+                ...commonOptions,
+                scales: (chartType === 'pie' || chartType === 'doughnut') ? undefined : {
+                    x: {
+                        ticks: { color: '#94A3B8' },
+                        grid: { color: '#334155' }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        ticks: { color: '#94A3B8' },
+                        grid: { color: '#334155' }
+                    }
+                }
+            }
+        };
+    }
+
+    activeChart = new Chart(chartCanvas, config);
 }
 
 // Demo Results (when backend is unavailable)
@@ -181,9 +377,19 @@ ORDER BY total_sales DESC
 LIMIT 5;`
     };
 
-    displayResults(demoData, 450);
+    displayResults(demoData, 450, queryInput.value.trim());
     resultsSection.style.display = 'block';
 }
+
+renderChartBtn.addEventListener('click', () => {
+    renderChart();
+});
+
+[chartTypeSelect, xAxisSelect, yAxisSelect].forEach(control => {
+    control.addEventListener('change', () => {
+        renderChart();
+    });
+});
 
 // Copy SQL to Clipboard
 copySqlBtn.addEventListener('click', () => {

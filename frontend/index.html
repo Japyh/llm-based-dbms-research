@@ -257,8 +257,31 @@
                 </div>
 
                 <div class="tab-content" id="visualization-tab">
+                    <div class="viz-controls">
+                        <div class="viz-control-group">
+                            <label for="chart-type-select">Chart Type</label>
+                            <select id="chart-type-select">
+                                <option value="auto" selected>Auto (from question)</option>
+                                <option value="bar">Bar / Histogram</option>
+                                <option value="line">Line</option>
+                                <option value="pie">Pie</option>
+                                <option value="doughnut">Doughnut</option>
+                                <option value="scatter">Scatter</option>
+                            </select>
+                        </div>
+                        <div class="viz-control-group">
+                            <label for="x-axis-select">X Axis</label>
+                            <select id="x-axis-select"></select>
+                        </div>
+                        <div class="viz-control-group">
+                            <label for="y-axis-select">Y Axis</label>
+                            <select id="y-axis-select"></select>
+                        </div>
+                        <button class="btn-secondary" id="render-chart-btn">Render</button>
+                    </div>
                     <div class="chart-container">
-                        <div id="chart"></div>
+                        <div id="chart-empty" class="chart-empty-state">Run a query to generate a chart.</div>
+                        <canvas id="chart-canvas" aria-label="Query result chart"></canvas>
                     </div>
                 </div>
 
@@ -340,6 +363,7 @@
         </main>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <script src="app.js"></script>
 </body>
 
